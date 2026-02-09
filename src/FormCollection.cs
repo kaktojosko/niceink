@@ -1146,7 +1146,7 @@ namespace niceink
 
 
 
-			if (!Root.PointerMode && !this.TopMost)
+			if (!Root.PointerMode && !Root.TextInputOpen && !this.TopMost)
 				ToTopMost();
 
 			// gpPenWidth status
@@ -1166,7 +1166,7 @@ namespace niceink
 			const int VK_RWIN = 0x5C;
 			bool pressed;
 
-			if (!Root.PointerMode)
+			if (!Root.PointerMode && !Root.TextInputOpen)
 			{
 				// ESC key : Exit
 				short retVal;
@@ -1189,7 +1189,7 @@ namespace niceink
 			}
 
 
-			if (!Root.FingerInAction && (!Root.PointerMode || Root.AllowHotkeyInPointerMode) && Root.Snapping <= 0)
+			if (!Root.FingerInAction && !Root.TextInputOpen && (!Root.PointerMode || Root.AllowHotkeyInPointerMode) && Root.Snapping <= 0)
 			{
 				bool control = ((short)(GetKeyState(VK_LCONTROL) | GetKeyState(VK_RCONTROL)) & 0x8000) == 0x8000;
 				bool alt = ((short)(GetKeyState(VK_LMENU) | GetKeyState(VK_RMENU)) & 0x8000) == 0x8000;
@@ -1535,18 +1535,33 @@ namespace niceink
 			else if (Root.LastPen >= 0 && Root.LastPen < Root.MaxPenCount)
 				textColor = Root.PenAttr[Root.LastPen].Color;
 
+			Root.TextInputOpen = true;
+
 			using (FormTextInput form = new FormTextInput())
 			{
-				if (form.ShowDialog() == DialogResult.OK && form.InputText.Length > 0)
+				form.TextOrFontChanged += delegate
+				{
+					Root.FormDisplay.ClearCanvus();
+					Root.FormDisplay.DrawStrokes();
+					Root.FormDisplay.DrawPreviewText(form.InputText, x, y, textColor, form.FontSize);
+					Root.FormDisplay.DrawButtons(false);
+					Root.FormDisplay.UpdateFormDisplay(true);
+				};
+
+				DialogResult result = form.ShowDialog();
+				Root.TextInputOpen = false;
+
+				if (result == DialogResult.OK && form.InputText.Length > 0)
 				{
 					TextAnnotation annotation = new TextAnnotation(form.InputText, x, y, textColor, form.FontSize);
 					Root.TextAnnotations.Add(annotation);
 					SaveUndoStrokes();
-					Root.FormDisplay.ClearCanvus();
-					Root.FormDisplay.DrawStrokes();
-					Root.FormDisplay.DrawButtons(true);
-					Root.FormDisplay.UpdateFormDisplay(true);
 				}
+
+				Root.FormDisplay.ClearCanvus();
+				Root.FormDisplay.DrawStrokes();
+				Root.FormDisplay.DrawButtons(true);
+				Root.FormDisplay.UpdateFormDisplay(true);
 			}
 		}
 

@@ -15,6 +15,8 @@ namespace niceink
 		public string InputText { get { return txtInput.Text; } }
 		public int FontSize { get { return (int)nudFontSize.Value; } }
 
+		public event EventHandler TextOrFontChanged;
+
 		public FormTextInput()
 		{
 			this.Text = "Text";
@@ -32,6 +34,7 @@ namespace niceink
 			txtInput.Width = 360;
 			txtInput.Font = new Font("Arial", 14);
 			txtInput.Height = 30;
+			txtInput.TextChanged += OnTextOrFontChanged;
 
 			lblFontSize = new Label();
 			lblFontSize.Text = "Size:";
@@ -44,6 +47,7 @@ namespace niceink
 			nudFontSize.Minimum = 8;
 			nudFontSize.Maximum = 200;
 			nudFontSize.Value = 28;
+			nudFontSize.ValueChanged += OnTextOrFontChanged;
 
 			btnOK = new Button();
 			btnOK.Text = "OK";
@@ -64,6 +68,18 @@ namespace niceink
 			this.Controls.Add(btnCancel);
 			this.AcceptButton = btnOK;
 			this.CancelButton = btnCancel;
+		}
+
+		private void OnTextOrFontChanged(object sender, EventArgs e)
+		{
+			if (TextOrFontChanged != null)
+				TextOrFontChanged(this, EventArgs.Empty);
+		}
+
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+			txtInput.Focus();
 		}
 	}
 }

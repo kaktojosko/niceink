@@ -257,6 +257,22 @@ namespace niceink
 			g.CompositingMode = oldMode;
 		}
 
+		public void DrawPreviewText(string text, int x, int y, Color color, int fontSize)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			System.Drawing.Drawing2D.CompositingMode oldMode = gCanvus.CompositingMode;
+			gCanvus.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
+			using (Font font = new Font("Arial", fontSize, FontStyle.Bold))
+			using (SolidBrush brush = new SolidBrush(Color.FromArgb(180, color)))
+			{
+				gCanvus.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+				gCanvus.DrawString(text, font, brush, x, y);
+			}
+			gCanvus.CompositingMode = oldMode;
+		}
+
 		public void MoveStrokes(int dy)
 		{
 			Point pt1 = new Point(0, 0);

@@ -121,6 +121,7 @@ namespace niceink
 
 		public bool PanMode = false;
 		public bool TextMode = false;
+		public bool TextInputOpen = false;
 		public bool InkVisible = true;
 		public List<TextAnnotation> TextAnnotations = new List<TextAnnotation>();
 
