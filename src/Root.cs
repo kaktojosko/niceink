@@ -63,20 +63,26 @@ namespace niceink
 			// Handle keyboard input for inline text editing
 			if (Root.InlineTextActive)
 			{
-				if (m.Msg == 0x0100) // WM_KEYDOWN
+				const int WM_KEYDOWN = 0x0100;
+				const int WM_CHAR = 0x0102;
+				const int VK_RETURN = 0x0D;
+				const int VK_ESCAPE = 0x1B;
+				const int VK_BACK = 0x08;
+
+				if (m.Msg == WM_KEYDOWN)
 				{
 					int vk = m.WParam.ToInt32();
-					if (vk == 0x0D) // VK_RETURN
+					if (vk == VK_RETURN)
 					{
 						Root.FormCollection.CommitInlineText();
 						return true;
 					}
-					else if (vk == 0x1B) // VK_ESCAPE
+					else if (vk == VK_ESCAPE)
 					{
 						Root.FormCollection.CancelInlineText();
 						return true;
 					}
-					else if (vk == 0x08) // VK_BACK
+					else if (vk == VK_BACK)
 					{
 						if (Root.InlineText.Length > 0)
 						{
@@ -86,7 +92,7 @@ namespace niceink
 						return true;
 					}
 				}
-				else if (m.Msg == 0x0102) // WM_CHAR
+				else if (m.Msg == WM_CHAR)
 				{
 					char c = (char)m.WParam.ToInt32();
 					if (c >= 32) // printable characters
