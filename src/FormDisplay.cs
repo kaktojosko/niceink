@@ -229,11 +229,32 @@ namespace gInk
 		{
 			if (Root.InkVisible)
 				Root.FormCollection.IC.Renderer.Draw(gCanvus, Root.FormCollection.IC.Ink.Strokes);
+			DrawTextAnnotations(gCanvus);
 		}
 		public void DrawStrokes(Graphics g)
 		{
 			if (Root.InkVisible)
 				Root.FormCollection.IC.Renderer.Draw(g, Root.FormCollection.IC.Ink.Strokes);
+			DrawTextAnnotations(g);
+		}
+
+		public void DrawTextAnnotations(Graphics g)
+		{
+			if (!Root.InkVisible)
+				return;
+
+			System.Drawing.Drawing2D.CompositingMode oldMode = g.CompositingMode;
+			g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
+			foreach (TextAnnotation annotation in Root.TextAnnotations)
+			{
+				using (Font font = new Font("Arial", annotation.FontSize, FontStyle.Bold))
+				using (SolidBrush brush = new SolidBrush(annotation.Color))
+				{
+					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+					g.DrawString(annotation.Text, font, brush, annotation.X, annotation.Y);
+				}
+			}
+			g.CompositingMode = oldMode;
 		}
 
 		public void MoveStrokes(int dy)

@@ -35,6 +35,7 @@
 			this.btDock = new System.Windows.Forms.Button();
 			this.btPenWidth = new System.Windows.Forms.Button();
 			this.btEraser = new System.Windows.Forms.Button();
+			this.btText = new System.Windows.Forms.Button();
 			this.btSnap = new System.Windows.Forms.Button();
 			this.btPointer = new System.Windows.Forms.Button();
 			this.btStop = new System.Windows.Forms.Button();
@@ -57,6 +58,7 @@
 			this.gpButtons.Controls.Add(this.btDock);
 			this.gpButtons.Controls.Add(this.btPenWidth);
 			this.gpButtons.Controls.Add(this.btEraser);
+			this.gpButtons.Controls.Add(this.btText);
 			this.gpButtons.Controls.Add(this.btSnap);
 			this.gpButtons.Controls.Add(this.btPointer);
 			this.gpButtons.Controls.Add(this.btStop);
@@ -166,6 +168,25 @@
 			this.btEraser.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
 			this.btEraser.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
 			this.btEraser.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
+			// 
+			// btText
+			// 
+			this.btText.FlatAppearance.BorderSize = 0;
+			this.btText.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
+			this.btText.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
+			this.btText.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btText.ForeColor = System.Drawing.Color.Transparent;
+			this.btText.Image = global::gInk.Properties.Resources.text;
+			this.btText.Location = new System.Drawing.Point(559, 4);
+			this.btText.Name = "btText";
+			this.btText.Size = new System.Drawing.Size(69, 69);
+			this.btText.TabIndex = 0;
+			this.toolTip.SetToolTip(this.btText, "Text");
+			this.btText.UseVisualStyleBackColor = false;
+			this.btText.Click += new System.EventHandler(this.btText_Click);
+			this.btText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
+			this.btText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
+			this.btText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
 			// 
 			// btSnap
 			// 
@@ -339,6 +360,7 @@
 		private System.Windows.Forms.PictureBox pboxPenWidthIndicator;
 		public System.Windows.Forms.Button btPan;
 		public System.Windows.Forms.Button btInkVisible;
+		public System.Windows.Forms.Button btText;
 	}
 }
 

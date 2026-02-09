@@ -11,6 +11,24 @@ using Microsoft.Ink;
 
 namespace gInk
 {
+	public class TextAnnotation
+	{
+		public string Text;
+		public int X;
+		public int Y;
+		public Color Color;
+		public int FontSize;
+
+		public TextAnnotation(string text, int x, int y, Color color, int fontSize)
+		{
+			Text = text;
+			X = x;
+			Y = y;
+			Color = color;
+			FontSize = fontSize;
+		}
+	}
+
 	public class TestMessageFilter : IMessageFilter
 	{
 		public Root Root;
@@ -60,6 +78,7 @@ namespace gInk
 		public bool ClearEnabled = true;
 		public bool PanEnabled = true;
 		public bool InkVisibleEnabled = true;
+		public bool TextEnabled = true;
 		public DrawingAttributes[] PenAttr = new DrawingAttributes[MaxPenCount];
 		public bool AutoScroll;
 		public bool WhiteTrayIcon;
@@ -101,12 +120,15 @@ namespace gInk
 		public bool MouseMovedUnderSnapshotDragging = false; // used to pause re-drawing when mouse is not moving during dragging to take a screenshot
 
 		public bool PanMode = false;
+		public bool TextMode = false;
 		public bool InkVisible = true;
+		public List<TextAnnotation> TextAnnotations = new List<TextAnnotation>();
 
 		public Ink[] UndoStrokes;
 		//public Ink UponUndoStrokes;
 		public int UndoP;
 		public int UndoDepth, RedoDepth;
+		public List<TextAnnotation>[] UndoTextAnnotations;
 
 		public NotifyIcon trayIcon;
 		public ContextMenu trayMenu;
@@ -212,6 +234,8 @@ namespace gInk
 			{
 				UndoStrokes = new Ink[8];
 				UndoStrokes[0] = FormCollection.IC.Ink.Clone();
+				UndoTextAnnotations = new List<TextAnnotation>[8];
+				UndoTextAnnotations[0] = new List<TextAnnotation>(TextAnnotations);
 				UndoDepth = 0;
 				UndoP = 0;
 			}
@@ -239,7 +263,9 @@ namespace gInk
 		public void ClearInk()
 		{
 			FormCollection.IC.Ink.DeleteStrokes();
+			TextAnnotations.Clear();
 			FormDisplay.ClearCanvus();
+			FormDisplay.DrawStrokes();
 			FormDisplay.DrawButtons(true);
 			FormDisplay.UpdateFormDisplay(true);
 		}
@@ -262,6 +288,11 @@ namespace gInk
 			FormCollection.IC.Ink.DeleteStrokes();
 			if (UndoStrokes[UndoP].Strokes.Count > 0)
 				FormCollection.IC.Ink.AddStrokesAtRectangle(UndoStrokes[UndoP].Strokes, UndoStrokes[UndoP].Strokes.GetBoundingBox());
+
+			if (UndoTextAnnotations[UndoP] != null)
+				TextAnnotations = new List<TextAnnotation>(UndoTextAnnotations[UndoP]);
+			else
+				TextAnnotations.Clear();
 
 			FormDisplay.ClearCanvus();
 			FormDisplay.DrawStrokes();
@@ -309,6 +340,11 @@ namespace gInk
 			FormCollection.IC.Ink.DeleteStrokes();
 			if (UndoStrokes[UndoP].Strokes.Count > 0)
 				FormCollection.IC.Ink.AddStrokesAtRectangle(UndoStrokes[UndoP].Strokes, UndoStrokes[UndoP].Strokes.GetBoundingBox());
+
+			if (UndoTextAnnotations[UndoP] != null)
+				TextAnnotations = new List<TextAnnotation>(UndoTextAnnotations[UndoP]);
+			else
+				TextAnnotations.Clear();
 
 			FormDisplay.ClearCanvus();
 			FormDisplay.DrawStrokes();
@@ -634,6 +670,12 @@ namespace gInk
 						case "INKVISIBLE_ICON":
 							if (sPara.ToUpper() == "FALSE" || sPara == "0" || sPara.ToUpper() == "OFF")
 								InkVisibleEnabled = false;
+							break;
+						case "TEXT_ICON":
+							if (sPara.ToUpper() == "FALSE" || sPara == "0" || sPara.ToUpper() == "OFF")
+								TextEnabled = false;
+							else if (sPara.ToUpper() == "TRUE" || sPara == "1" || sPara.ToUpper() == "ON")
+								TextEnabled = true;
 							break;
 						case "ALLOW_DRAGGING_TOOLBAR":
 							if (sPara.ToUpper() == "FALSE" || sPara == "0" || sPara.ToUpper() == "OFF")

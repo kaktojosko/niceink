@@ -26,6 +26,7 @@ namespace gInk
 		public Bitmap image_eraser_act, image_eraser;
 		public Bitmap image_pan_act, image_pan;
 		public Bitmap image_visible_not, image_visible;
+		public Bitmap image_text_act, image_text;
 		public System.Windows.Forms.Cursor cursorred, cursorsnap;
 		public System.Windows.Forms.Cursor cursortip;
 
@@ -84,6 +85,9 @@ namespace gInk
 			btUndo.Height = (int)(gpButtons.Height * 0.88);
 			btUndo.Width = btUndo.Height;
 			btUndo.Top = (int)(gpButtons.Height * 0.07);
+			btText.Height = (int)(gpButtons.Height * 0.88);
+			btText.Width = btText.Height;
+			btText.Top = (int)(gpButtons.Height * 0.07);
 
 			btPen = new Button[Root.MaxPenCount];
 
@@ -155,6 +159,16 @@ namespace gInk
 			else
 			{
 				btPointer.Visible = false;
+			}
+			if (Root.TextEnabled)
+			{
+				btText.Visible = true;
+				btText.Left = cumulatedleft;
+				cumulatedleft += (int)(btText.Width * 1.1);
+			}
+			else
+			{
+				btText.Visible = false;
 			}
 			cumulatedleft += (int)(btStop.Width * 0.8);
 			if (Root.PenWidthEnabled)
@@ -326,6 +340,16 @@ namespace gInk
 			g.DrawImage(global::gInk.Properties.Resources.visible, 0, 0, btInkVisible.Width, btInkVisible.Height);
 			btInkVisible.Image = image_visible;
 
+			image_text = new Bitmap(btText.Width, btText.Height);
+			g = Graphics.FromImage(image_text);
+			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+			g.DrawImage(global::gInk.Properties.Resources.text, 0, 0, btText.Width, btText.Height);
+			image_text_act = new Bitmap(btText.Width, btText.Height);
+			g = Graphics.FromImage(image_text_act);
+			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+			g.DrawImage(global::gInk.Properties.Resources.text_act, 0, 0, btText.Width, btText.Height);
+			btText.Image = image_text;
+
 			image_snap = new Bitmap(btSnap.Width, btSnap.Height);
 			g = Graphics.FromImage(image_snap);
 			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -406,6 +430,7 @@ namespace gInk
 			this.toolTip.SetToolTip(this.btEraser, Root.Local.ButtonNameErasor + " (" + Root.Hotkey_Eraser.ToString() + ")");
 			this.toolTip.SetToolTip(this.btPan, Root.Local.ButtonNamePan + " (" + Root.Hotkey_Pan.ToString() + ")");
 			this.toolTip.SetToolTip(this.btPointer, Root.Local.ButtonNameMousePointer + " (" + Root.Hotkey_Pointer.ToString() + ")");
+			this.toolTip.SetToolTip(this.btText, Root.Local.ButtonNameText);
 			this.toolTip.SetToolTip(this.btInkVisible, Root.Local.ButtonNameInkVisible + " (" + Root.Hotkey_InkVisible.ToString() + ")");
 			this.toolTip.SetToolTip(this.btSnap, Root.Local.ButtonNameSnapshot + " (" + Root.Hotkey_Snap.ToString() + ")");
 			this.toolTip.SetToolTip(this.btUndo, Root.Local.ButtonNameUndo + " (" + Root.Hotkey_Undo.ToString() + ")");
@@ -433,6 +458,8 @@ namespace gInk
 			Root.UndoStrokes[Root.UndoP].DeleteStrokes();
 			if (IC.Ink.Strokes.Count > 0)
 				Root.UndoStrokes[Root.UndoP].AddStrokesAtRectangle(IC.Ink.Strokes, IC.Ink.Strokes.GetBoundingBox());
+
+			Root.UndoTextAnnotations[Root.UndoP] = new List<TextAnnotation>(Root.TextAnnotations);
 		}
 
 		private void IC_CursorDown(object sender, InkCollectorCursorDownEventArgs e)
@@ -524,6 +551,10 @@ namespace gInk
 				Root.SnappingRect = new Rectangle(left + this.Left, top + this.Top, width, height);
 				Root.UponTakingSnap = true;
 				ExitSnapping();
+			}
+			else if (Root.TextMode)
+			{
+				PlaceText(e.X, e.Y);
 			}
 			else if (Root.PanMode)
 			{
@@ -631,8 +662,36 @@ namespace gInk
 
 		public void SelectPen(int pen)
 		{
-			// -3=pan, -2=pointer, -1=erasor, 0+=pens
-			if (pen == -3)
+			// -4=text, -3=pan, -2=pointer, -1=erasor, 0+=pens
+			Root.TextMode = false;
+			btText.Image = image_text;
+
+			if (pen == -4)
+			{
+				for (int b = 0; b < Root.MaxPenCount; b++)
+					btPen[b].Image = image_pen[b];
+				btEraser.Image = image_eraser;
+				btPointer.Image = image_pointer;
+				btPan.Image = image_pan;
+				btText.Image = image_text_act;
+				EnterEraserMode(false);
+				Root.UnPointer();
+				Root.PanMode = false;
+				Root.TextMode = true;
+
+				this.Cursor = System.Windows.Forms.Cursors.Cross;
+
+				try
+				{
+					IC.SetWindowInputRectangle(new Rectangle(0, 0, 1, 1));
+				}
+				catch
+				{
+					Thread.Sleep(1);
+					IC.SetWindowInputRectangle(new Rectangle(0, 0, 1, 1));
+				}
+			}
+			else if (pen == -3)
 			{
 				for (int b = 0; b < Root.MaxPenCount; b++)
 					btPen[b].Image = image_pen[b];
@@ -1372,6 +1431,7 @@ namespace gInk
 			image_eraser_act.Dispose(); image_eraser.Dispose();
 			image_pan_act.Dispose(); image_pan.Dispose();
 			image_visible_not.Dispose(); image_visible.Dispose();
+			image_text.Dispose(); image_text_act.Dispose();
 			for (int b = 0; b < Root.MaxPenCount; b++)
 			{
 				image_pen[b].Dispose();
@@ -1454,6 +1514,40 @@ namespace gInk
 			}
 
 			SelectPen(-3);
+		}
+
+		public void btText_Click(object sender, EventArgs e)
+		{
+			if (ToolbarMoved)
+			{
+				ToolbarMoved = false;
+				return;
+			}
+
+			SelectPen(-4);
+		}
+
+		private void PlaceText(int x, int y)
+		{
+			Color textColor = Color.FromArgb(225, 60, 60);
+			if (Root.CurrentPen >= 0 && Root.CurrentPen < Root.MaxPenCount)
+				textColor = Root.PenAttr[Root.CurrentPen].Color;
+			else if (Root.LastPen >= 0 && Root.LastPen < Root.MaxPenCount)
+				textColor = Root.PenAttr[Root.LastPen].Color;
+
+			using (FormTextInput form = new FormTextInput())
+			{
+				if (form.ShowDialog() == DialogResult.OK && form.InputText.Length > 0)
+				{
+					TextAnnotation annotation = new TextAnnotation(form.InputText, x, y, textColor, form.FontSize);
+					Root.TextAnnotations.Add(annotation);
+					SaveUndoStrokes();
+					Root.FormDisplay.ClearCanvus();
+					Root.FormDisplay.DrawStrokes();
+					Root.FormDisplay.DrawButtons(true);
+					Root.FormDisplay.UpdateFormDisplay(true);
+				}
+			}
 		}
 
 		short LastF4Status = 0;
