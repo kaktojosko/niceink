@@ -469,6 +469,9 @@ namespace niceink
 		DateTime TickStartTime;
 		private void timer1_Tick(object sender, EventArgs e)
 		{
+			if (Root.FormCollection == null)
+				return;
+
 			Tick++;
 
 			/*
