@@ -315,9 +315,11 @@ namespace niceink
 		{
 			string snapbasepath = Root.SnapshotBasePath;
 			snapbasepath = Environment.ExpandEnvironmentVariables(snapbasepath);
-			if (Root.SnapshotBasePath == "%USERPROFILE%/Pictures/niceink/")
-				if (!System.IO.Directory.Exists(snapbasepath))
-					System.IO.Directory.CreateDirectory(snapbasepath);
+			if (Root.SnapshotBasePath == "%USERPROFILE%/Pictures/niceink/" &&
+			    !System.IO.Directory.Exists(snapbasepath))
+			{
+				System.IO.Directory.CreateDirectory(snapbasepath);
+			}
 
 			if (System.IO.Directory.Exists(snapbasepath))
 			{
