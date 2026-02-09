@@ -1,4 +1,4 @@
-﻿namespace gInk
+﻿namespace niceink
 {
 	partial class FormCollection
 	{
@@ -79,7 +79,7 @@
 			this.btInkVisible.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btInkVisible.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btInkVisible.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btInkVisible.Image = global::gInk.Properties.Resources.visible;
+			this.btInkVisible.Image = global::niceink.Properties.Resources.visible;
 			this.btInkVisible.Location = new System.Drawing.Point(1053, 4);
 			this.btInkVisible.Name = "btInkVisible";
 			this.btInkVisible.Size = new System.Drawing.Size(69, 69);
@@ -98,7 +98,7 @@
 			this.btPan.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btPan.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btPan.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btPan.Image = global::gInk.Properties.Resources.pan;
+			this.btPan.Image = global::niceink.Properties.Resources.pan;
 			this.btPan.Location = new System.Drawing.Point(978, 4);
 			this.btPan.Name = "btPan";
 			this.btPan.Size = new System.Drawing.Size(69, 69);
@@ -119,7 +119,7 @@
 			this.btDock.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btDock.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btDock.ForeColor = System.Drawing.Color.WhiteSmoke;
-			this.btDock.Image = global::gInk.Properties.Resources.dock;
+			this.btDock.Image = global::niceink.Properties.Resources.dock;
 			this.btDock.Location = new System.Drawing.Point(0, 4);
 			this.btDock.Name = "btDock";
 			this.btDock.Size = new System.Drawing.Size(51, 69);
@@ -138,7 +138,7 @@
 			this.btPenWidth.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btPenWidth.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btPenWidth.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btPenWidth.Image = global::gInk.Properties.Resources.penwidth;
+			this.btPenWidth.Image = global::niceink.Properties.Resources.penwidth;
 			this.btPenWidth.Location = new System.Drawing.Point(399, 4);
 			this.btPenWidth.Name = "btPenWidth";
 			this.btPenWidth.Size = new System.Drawing.Size(69, 69);
@@ -157,7 +157,7 @@
 			this.btEraser.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btEraser.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btEraser.ForeColor = System.Drawing.Color.Transparent;
-			this.btEraser.Image = global::gInk.Properties.Resources.eraser;
+			this.btEraser.Image = global::niceink.Properties.Resources.eraser;
 			this.btEraser.Location = new System.Drawing.Point(489, 4);
 			this.btEraser.Name = "btEraser";
 			this.btEraser.Size = new System.Drawing.Size(69, 69);
@@ -176,7 +176,7 @@
 			this.btText.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btText.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btText.ForeColor = System.Drawing.Color.Transparent;
-			this.btText.Image = global::gInk.Properties.Resources.text;
+			this.btText.Image = global::niceink.Properties.Resources.text;
 			this.btText.Location = new System.Drawing.Point(559, 4);
 			this.btText.Name = "btText";
 			this.btText.Size = new System.Drawing.Size(69, 69);
@@ -195,7 +195,7 @@
 			this.btSnap.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btSnap.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btSnap.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btSnap.Image = global::gInk.Properties.Resources.snap;
+			this.btSnap.Image = global::niceink.Properties.Resources.snap;
 			this.btSnap.Location = new System.Drawing.Point(704, 4);
 			this.btSnap.Name = "btSnap";
 			this.btSnap.Size = new System.Drawing.Size(69, 69);
@@ -215,7 +215,7 @@
 			this.btPointer.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btPointer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btPointer.ForeColor = System.Drawing.Color.WhiteSmoke;
-			this.btPointer.Image = global::gInk.Properties.Resources.pointer;
+			this.btPointer.Image = global::niceink.Properties.Resources.pointer;
 			this.btPointer.Location = new System.Drawing.Point(574, 4);
 			this.btPointer.Name = "btPointer";
 			this.btPointer.Size = new System.Drawing.Size(69, 69);
@@ -234,7 +234,7 @@
 			this.btStop.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btStop.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btStop.Image = global::gInk.Properties.Resources.exit;
+			this.btStop.Image = global::niceink.Properties.Resources.exit;
 			this.btStop.Location = new System.Drawing.Point(1140, 4);
 			this.btStop.Name = "btStop";
 			this.btStop.Size = new System.Drawing.Size(69, 69);
@@ -253,7 +253,7 @@
 			this.btClear.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btClear.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btClear.Image = global::gInk.Properties.Resources.garbage;
+			this.btClear.Image = global::niceink.Properties.Resources.garbage;
 			this.btClear.Location = new System.Drawing.Point(874, 4);
 			this.btClear.Name = "btClear";
 			this.btClear.Size = new System.Drawing.Size(69, 69);
@@ -272,7 +272,7 @@
 			this.btUndo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btUndo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btUndo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btUndo.Image = global::gInk.Properties.Resources.undo;
+			this.btUndo.Image = global::niceink.Properties.Resources.undo;
 			this.btUndo.Location = new System.Drawing.Point(789, 4);
 			this.btUndo.Name = "btUndo";
 			this.btUndo.Size = new System.Drawing.Size(69, 69);
@@ -292,7 +292,7 @@
 			// gpPenWidth
 			// 
 			this.gpPenWidth.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.gpPenWidth.BackgroundImage = global::gInk.Properties.Resources.penwidthpanel;
+			this.gpPenWidth.BackgroundImage = global::niceink.Properties.Resources.penwidthpanel;
 			this.gpPenWidth.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.gpPenWidth.Controls.Add(this.pboxPenWidthIndicator);
 			this.gpPenWidth.Location = new System.Drawing.Point(174, 326);

@@ -30,7 +30,7 @@ v1.1.0 (Aug. 26, 2020)
 - Better handling of UI layout for multiple displays of unmatched DPI.
 - Show hotkeys in button tooltips.
 - Fix a rare crash which occurs at startup due to language path problem. 
-- Prevent multiple instances of gInk.
+- Prevent multiple instances of niceink.
 - Prevent multiple options windows.
 - Fix Alt+F4 causing unwanted behavior.
 - Spanish (Latin America) language.
@@ -130,7 +130,7 @@ v0.4.1 (Mar. 13, 2017)
 v0.4.0 (Jan. 3, 2017)
 =================
 - Multiple level undo (new feature).
-- Save snapshots to %USERPROFILE%/Pictures/gInk (new feature).
+- Save snapshots to %USERPROFILE%/Pictures/niceink (new feature).
 - Show a balloon for browsing the snapshot file location.
 - Change pen icons.
 - Fix incorrect snapshot area when the DPI setting is not at 100%.

@@ -21,14 +21,14 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Build Release
-        run: msbuild src\gInk.csproj /p:Configuration=Release /p:Platform=x86
+        run: msbuild src\niceink.csproj /p:Configuration=Release /p:Platform=x86
 
       - name: Prepare release package
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path release -Force
-          Copy-Item bin\gInk.exe release\
-          Copy-Item bin\gInk.exe.config release\
+          Copy-Item bin\niceink.exe release\
+          Copy-Item bin\niceink.exe.config release\
           Copy-Item bin\Microsoft.Ink.dll release\
           Copy-Item bin\config.ini release\
           Copy-Item bin\config_default.ini release\
@@ -37,17 +37,17 @@ jobs:
           Copy-Item bin\icon_red.ico release\
           Copy-Item bin\icon_white.ico release\
           Copy-Item -Recurse bin\lang release\lang
-          Compress-Archive -Path release\* -DestinationPath gInk.zip
+          Compress-Archive -Path release\* -DestinationPath niceink.zip
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gInk
-          path: gInk.zip
+          name: niceink
+          path: niceink.zip
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: gInk.zip
+          files: niceink.zip
           generate_release_notes: true

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace gInk
+namespace niceink
 {
 	public class Hotkey
 	{
