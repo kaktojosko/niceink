@@ -662,7 +662,7 @@ namespace gInk
 
 		public void SelectPen(int pen)
 		{
-			// -4=text, -3=pan, -2=pointer, -1=erasor, 0+=pens
+			// -4=text, -3=pan, -2=pointer, -1=eraser, 0+=pens
 			Root.TextMode = false;
 			btText.Image = image_text;
 
