@@ -1,4 +1,4 @@
-﻿namespace gInk
+﻿namespace niceink
 {
 	partial class HotkeyInputBox
 	{

@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
-namespace gInk
+namespace niceink
 {
 	public partial class FormButtonHitter : Form
 	{

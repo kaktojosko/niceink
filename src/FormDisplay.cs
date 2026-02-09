@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using Microsoft.Ink;
 
-namespace gInk
+namespace niceink
 {
 	public partial class FormDisplay : Form
 	{
@@ -315,9 +315,11 @@ namespace gInk
 		{
 			string snapbasepath = Root.SnapshotBasePath;
 			snapbasepath = Environment.ExpandEnvironmentVariables(snapbasepath);
-			if (Root.SnapshotBasePath == "%USERPROFILE%/Pictures/gInk/")
-				if (!System.IO.Directory.Exists(snapbasepath))
-					System.IO.Directory.CreateDirectory(snapbasepath);
+			if (Root.SnapshotBasePath == "%USERPROFILE%/Pictures/niceink/" &&
+			    !System.IO.Directory.Exists(snapbasepath))
+			{
+				System.IO.Directory.CreateDirectory(snapbasepath);
+			}
 
 			if (System.IO.Directory.Exists(snapbasepath))
 			{

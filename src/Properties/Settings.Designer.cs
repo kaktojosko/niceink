@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace gInk.Properties {
+namespace niceink.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
