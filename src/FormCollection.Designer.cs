@@ -182,7 +182,7 @@
 			this.btTextSize.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btTextSize.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
 			this.btTextSize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btTextSize.Image = global::niceink.Properties.Resources.text;
+			this.btTextSize.Image = global::niceink.Properties.Resources.textsize;
 			this.btTextSize.Location = new System.Drawing.Point(470, 4);
 			this.btTextSize.Name = "btTextSize";
 			this.btTextSize.Size = new System.Drawing.Size(69, 69);

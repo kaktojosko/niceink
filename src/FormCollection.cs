@@ -26,7 +26,7 @@ namespace niceink
 		public Bitmap image_eraser_act, image_eraser;
 		public Bitmap image_pan_act, image_pan;
 		public Bitmap image_visible_not, image_visible;
-		public Bitmap image_text, image_text_act;
+		public Bitmap image_text, image_text_act, image_textsize;
 		public System.Windows.Forms.Cursor cursorred, cursorsnap;
 		public System.Windows.Forms.Cursor cursortip;
 
@@ -360,6 +360,11 @@ namespace niceink
 			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 			g.DrawImage(global::niceink.Properties.Resources.text_act, 0, 0, btText.Width, btText.Height);
 			btText.Image = image_text;
+			image_textsize = new Bitmap(btTextSize.Width, btTextSize.Height);
+			g = Graphics.FromImage(image_textsize);
+			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+			g.DrawImage(global::niceink.Properties.Resources.textsize, 0, 0, btTextSize.Width, btTextSize.Height);
+			btTextSize.Image = image_textsize;
 
 			image_snap = new Bitmap(btSnap.Width, btSnap.Height);
 			g = Graphics.FromImage(image_snap);
@@ -1543,7 +1548,7 @@ namespace niceink
 			image_eraser_act.Dispose(); image_eraser.Dispose();
 			image_pan_act.Dispose(); image_pan.Dispose();
 			image_visible_not.Dispose(); image_visible.Dispose();
-			image_text.Dispose(); image_text_act.Dispose();
+			image_text.Dispose(); image_text_act.Dispose(); image_textsize.Dispose();
 			for (int b = 0; b < Root.MaxPenCount; b++)
 			{
 				image_pen[b].Dispose();
