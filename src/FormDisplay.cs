@@ -278,7 +278,7 @@ namespace niceink
 							path.AddString(textBeforeCursor, font.FontFamily, (int)font.Style, font.Size,
 								new Point(textObj.X, textObj.Y), StringFormat.GenericDefault);
 							RectangleF bounds = path.GetBounds();
-							cursorX = textObj.X + (int)(bounds.Width + 0.5f);
+							cursorX = (int)(bounds.Right + 2);
 						}
 					}
 					
