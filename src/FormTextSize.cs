@@ -10,7 +10,7 @@ namespace niceink
         private Label lblSize;
         private Button btnUp;
         private Button btnDown;
-        private Button btnClose;
+        private Button btnOk;
 
         public FormTextSize(Root root)
         {
@@ -21,25 +21,28 @@ namespace niceink
 
         private void InitializeComponent()
         {
-            this.FormBorderStyle = FormBorderStyle.None;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.Manual;
-            this.Size = new Size(120, 140);
+            this.Size = new Size(100, 160);
             this.BackColor = Color.WhiteSmoke;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.ControlBox = false;
 
             // Title label
             Label lblTitle = new Label();
-            lblTitle.Text = "Text Size";
-            lblTitle.Font = new Font("Microsoft Sans Serif", 10, FontStyle.Bold);
+            lblTitle.Text = "Size";
+            lblTitle.Font = new Font("Microsoft Sans Serif", 9, FontStyle.Bold);
             lblTitle.AutoSize = true;
-            lblTitle.Location = new Point(25, 5);
+            lblTitle.Location = new Point(35, 5);
             this.Controls.Add(lblTitle);
 
             // Up button (+)
             btnUp = new Button();
             btnUp.Text = "+";
-            btnUp.Font = new Font("Microsoft Sans Serif", 14, FontStyle.Bold);
+            btnUp.Font = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
             btnUp.Size = new Size(40, 35);
-            btnUp.Location = new Point(40, 25);
+            btnUp.Location = new Point(25, 25);
             btnUp.FlatStyle = FlatStyle.Flat;
             btnUp.FlatAppearance.BorderSize = 1;
             btnUp.Click += BtnUp_Click;
@@ -48,33 +51,32 @@ namespace niceink
             // Size display
             lblSize = new Label();
             lblSize.Text = Root.GlobalTextSize.ToString();
-            lblSize.Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold);
-            lblSize.AutoSize = true;
-            lblSize.Location = new Point(45, 65);
+            lblSize.Font = new Font("Microsoft Sans Serif", 14, FontStyle.Bold);
+            lblSize.Size = new Size(60, 25);
+            lblSize.Location = new Point(20, 65);
             lblSize.TextAlign = ContentAlignment.MiddleCenter;
             this.Controls.Add(lblSize);
 
             // Down button (-)
             btnDown = new Button();
             btnDown.Text = "−";
-            btnDown.Font = new Font("Microsoft Sans Serif", 14, FontStyle.Bold);
+            btnDown.Font = new Font("Microsoft Sans Serif", 12, FontStyle.Bold);
             btnDown.Size = new Size(40, 35);
-            btnDown.Location = new Point(40, 95);
+            btnDown.Location = new Point(25, 95);
             btnDown.FlatStyle = FlatStyle.Flat;
             btnDown.FlatAppearance.BorderSize = 1;
             btnDown.Click += BtnDown_Click;
             this.Controls.Add(btnDown);
 
-            // Close button (X) in corner
-            btnClose = new Button();
-            btnClose.Text = "×";
-            btnClose.Font = new Font("Microsoft Sans Serif", 10, FontStyle.Bold);
-            btnClose.Size = new Size(25, 25);
-            btnClose.Location = new Point(95, 2);
-            btnClose.FlatStyle = FlatStyle.Flat;
-            btnClose.FlatAppearance.BorderSize = 0;
-            btnClose.Click += (s, e) => this.Close();
-            this.Controls.Add(btnClose);
+            // OK button
+            btnOk = new Button();
+            btnOk.Text = "OK";
+            btnOk.Font = new Font("Microsoft Sans Serif", 9, FontStyle.Regular);
+            btnOk.Size = new Size(50, 25);
+            btnOk.Location = new Point(20, 135);
+            btnOk.FlatStyle = FlatStyle.Flat;
+            btnOk.Click += (s, e) => this.Close();
+            this.Controls.Add(btnOk);
         }
 
         private void BtnUp_Click(object sender, EventArgs e)
@@ -98,12 +100,6 @@ namespace niceink
         private void UpdateDisplay()
         {
             lblSize.Text = Root.GlobalTextSize.ToString();
-        }
-
-        protected override void OnDeactivate(EventArgs e)
-        {
-            base.OnDeactivate(e);
-            this.Close();
         }
     }
 }
