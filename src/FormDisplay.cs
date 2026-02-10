@@ -269,20 +269,40 @@ namespace niceink
 				{
 					string textBeforeCursor = (textObj.Text != null && cursorPos > 0) ? textObj.Text.Substring(0, Math.Min(cursorPos, textObj.Text.Length)) : "";
 					int cursorX = textObj.X;
+					int cursorY = textObj.Y;
 					
-					// Calculate cursor position using the same method as text rendering (GraphicsPath)
-					if (!string.IsNullOrEmpty(textBeforeCursor))
+					if (textObj.HasOutline)
 					{
-						using (GraphicsPath path = new GraphicsPath())
+						// For outlined text, use GraphicsPath (same as drawing method)
+						if (!string.IsNullOrEmpty(textBeforeCursor))
 						{
-							path.AddString(textBeforeCursor, font.FontFamily, (int)font.Style, font.Size,
-								new Point(textObj.X, textObj.Y), StringFormat.GenericDefault);
-							RectangleF bounds = path.GetBounds();
-							cursorX = (int)(bounds.Right + 2);
+							using (GraphicsPath path = new GraphicsPath())
+							{
+								path.AddString(textBeforeCursor, font.FontFamily, (int)font.Style, font.Size,
+									new Point(textObj.X, textObj.Y), StringFormat.GenericDefault);
+								RectangleF bounds = path.GetBounds();
+								cursorX = (int)bounds.Right;
+							}
+						}
+						// Add small gap after the text
+						cursorX += 2;
+						// Adjust Y for outline thickness
+						cursorY += 2;
+					}
+					else
+					{
+						// For non-outlined text, use MeasureString (same as drawing method)
+						if (!string.IsNullOrEmpty(textBeforeCursor))
+						{
+							// Use the same StringFormat as DrawString uses by default
+							using (StringFormat sf = new StringFormat(StringFormat.GenericDefault))
+							{
+								SizeF size = gCanvus.MeasureString(textBeforeCursor, font, int.MaxValue, sf);
+								cursorX = textObj.X + (int)size.Width;
+							}
 						}
 					}
 					
-					int cursorY = textObj.Y;
 					int cursorHeight = (int)(fontSize * 1.2);  // Scale cursor with text size
 					
 					using (Pen cursorPen = new Pen(textObj.Color, 2))

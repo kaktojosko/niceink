@@ -883,10 +883,24 @@ namespace niceink
 			if (x + 100 > screen.WorkingArea.Right) x = screen.WorkingArea.Right - 110;
 			if (y < screen.WorkingArea.Top) y = screen.WorkingArea.Top + 10;
 
-			// Open text size dialog
-			FormTextSize formTextSize = new FormTextSize(Root);
-			formTextSize.Location = new Point(x, y);
-			formTextSize.Show(this);
+			// Hide button hitter to allow clicks on the dialog
+			bool wasButtonHitterVisible = Root.FormButtonHitter.Visible;
+			if (wasButtonHitterVisible)
+				Root.FormButtonHitter.Hide();
+			
+			// Use BeginInvoke to delay showing the form slightly
+			// This ensures the button click event is fully processed
+			this.BeginInvoke(new Action(() => {
+				FormTextSize formTextSize = new FormTextSize(Root);
+				formTextSize.Location = new Point(x, y);
+				formTextSize.StartPosition = FormStartPosition.Manual;
+				formTextSize.FormClosed += (s, args) => {
+					// Restore button hitter when dialog closes
+					if (wasButtonHitterVisible && !Root.PointerMode && Root.FormButtonHitter != null)
+						Root.FormButtonHitter.Show();
+				};
+				formTextSize.Show(this);
+			}));
 		}
 
 		public void btSnap_Click(object sender, EventArgs e)
