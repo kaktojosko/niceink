@@ -873,12 +873,20 @@ namespace niceink
 			if (Root.PointerMode)
 				return;
 
-			// Open text size dialog as modal
-			using (FormTextSize formTextSize = new FormTextSize(Root))
-			{
-				formTextSize.StartPosition = FormStartPosition.CenterScreen;
-				formTextSize.ShowDialog(this);
-			}
+			// Calculate position above the text size button
+			int x = gpButtonsLeft + btTextSize.Left + btTextSize.Width / 2 - 50;
+			int y = gpButtonsTop - 165;
+			
+			// Ensure dialog stays within screen bounds
+			Screen screen = Screen.FromPoint(new Point(gpButtonsLeft, gpButtonsTop));
+			if (x < screen.WorkingArea.Left) x = screen.WorkingArea.Left + 10;
+			if (x + 100 > screen.WorkingArea.Right) x = screen.WorkingArea.Right - 110;
+			if (y < screen.WorkingArea.Top) y = screen.WorkingArea.Top + 10;
+
+			// Open text size dialog
+			FormTextSize formTextSize = new FormTextSize(Root);
+			formTextSize.Location = new Point(x, y);
+			formTextSize.Show(this);
 		}
 
 		public void btSnap_Click(object sender, EventArgs e)
