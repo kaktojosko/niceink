@@ -114,7 +114,7 @@
 			this.btText.Click += new System.EventHandler(this.btText_Click);
 			this.btText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
 			this.btText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
-			this.btText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btText_MouseUp);
+			this.btText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
 			// 
 			// btPan
 			// 

@@ -1520,6 +1520,8 @@ namespace niceink
 							gpButtons.Left = gpButtonsLeft;
 						gpPenWidth.Left = gpButtonsLeft + btPenWidth.Left - gpPenWidth.Width / 2 + btPenWidth.Width / 2;
 						gpPenWidth.Top = gpButtonsTop - gpPenWidth.Height - 10;
+						gpTextSize.Left = gpButtonsLeft + btTextSize.Left - gpTextSize.Width / 2 + btTextSize.Width / 2;
+						gpTextSize.Top = gpButtonsTop - gpTextSize.Height - 10;
 						gpButtons.Top = gpButtonsTop;
 						Root.UponAllDrawingUpdate = true;
 					}
@@ -1635,28 +1637,6 @@ namespace niceink
 			}
 
 			EnterTextMode();
-		}
-
-		public void btText_MouseUp(object sender, MouseEventArgs e)
-		{
-			if (ToolbarMoved)
-			{
-				ToolbarMoved = false;
-				return;
-			}
-
-			// Right click opens text size panel
-			if (e.Button == MouseButtons.Right)
-			{
-				if (Root.PointerMode)
-					return;
-
-				Root.gpTextSizeVisible = !Root.gpTextSizeVisible;
-				if (Root.gpTextSizeVisible)
-					Root.UponButtonsUpdate |= 0x2;
-				else
-					Root.UponSubPanelUpdate = true;
-			}
 		}
 
 		private void EnterTextMode()
