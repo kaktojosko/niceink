@@ -11,20 +11,22 @@ using Microsoft.Ink;
 
 namespace niceink
 {
-	public class TextAnnotation
+	public class TextObject
 	{
 		public string Text;
 		public int X;
 		public int Y;
 		public Color Color;
+		public bool HasOutline;
 		public int FontSize;
 
-		public TextAnnotation(string text, int x, int y, Color color, int fontSize)
+		public TextObject(string text, int x, int y, Color color, bool hasOutline, int fontSize)
 		{
 			Text = text;
 			X = x;
 			Y = y;
 			Color = color;
+			HasOutline = hasOutline;
 			FontSize = fontSize;
 		}
 	}
@@ -60,57 +62,6 @@ namespace niceink
 				}
 			}
 
-			// Handle keyboard input for inline text editing
-			if (Root.InlineTextActive && Root.FormCollection != null)
-			{
-				const int WM_KEYDOWN = 0x0100;
-				const int WM_KEYUP = 0x0101;
-				const int WM_CHAR = 0x0102;
-				const int WM_IME_CHAR = 0x0286;
-				const int VK_RETURN = 0x0D;
-				const int VK_ESCAPE = 0x1B;
-				const int VK_BACK = 0x08;
-
-				if (m.Msg == WM_KEYDOWN)
-				{
-					int vk = m.WParam.ToInt32();
-					if (vk == VK_RETURN)
-					{
-						Root.FormCollection.CommitInlineText();
-						return true;
-					}
-					else if (vk == VK_ESCAPE)
-					{
-						Root.FormCollection.CancelInlineText();
-						return true;
-					}
-					else if (vk == VK_BACK)
-					{
-						if (Root.InlineText.Length > 0)
-						{
-							Root.InlineText = Root.InlineText.Substring(0, Root.InlineText.Length - 1);
-							Root.UponAllDrawingUpdate = true;
-						}
-						return true;
-					}
-					return true;
-				}
-				else if (m.Msg == WM_KEYUP)
-				{
-					return true;
-				}
-				else if (m.Msg == WM_CHAR || m.Msg == WM_IME_CHAR)
-				{
-					char c = (char)m.WParam.ToInt32();
-					if (c >= 32) // printable characters
-					{
-						Root.InlineText += c;
-						Root.UponAllDrawingUpdate = true;
-					}
-					return true;
-				}
-			}
-
 			return false;
 		}
 	}
@@ -130,7 +81,6 @@ namespace niceink
 		public bool ClearEnabled = true;
 		public bool PanEnabled = true;
 		public bool InkVisibleEnabled = true;
-		public bool TextEnabled = true;
 		public DrawingAttributes[] PenAttr = new DrawingAttributes[MaxPenCount];
 		public bool AutoScroll;
 		public bool WhiteTrayIcon;
@@ -172,23 +122,15 @@ namespace niceink
 		public bool MouseMovedUnderSnapshotDragging = false; // used to pause re-drawing when mouse is not moving during dragging to take a screenshot
 
 		public bool PanMode = false;
-		public bool TextMode = false;
 		public bool InkVisible = true;
-		public List<TextAnnotation> TextAnnotations = new List<TextAnnotation>();
-
-		// Inline text editing state
-		public bool InlineTextActive = false;
-		public string InlineText = "";
-		public int InlineTextX = 0;
-		public int InlineTextY = 0;
-		public Color InlineTextColor = Color.FromArgb(225, 60, 60);
-		public int InlineTextFontSize = 28;
+		public bool TextMode = false;
+		public List<TextObject> TextObjects = new List<TextObject>();
 
 		public Ink[] UndoStrokes;
+		public List<TextObject>[] UndoTexts;
 		//public Ink UponUndoStrokes;
 		public int UndoP;
 		public int UndoDepth, RedoDepth;
-		public List<TextAnnotation>[] UndoTextAnnotations;
 
 		public NotifyIcon trayIcon;
 		public ContextMenu trayMenu;
@@ -200,6 +142,7 @@ namespace niceink
 		public int CurrentPen = 1;  // defaut pen
 		public int LastPen = 1;
 		public int GlobalPenWidth = 80;
+		public int GlobalTextSize = 24;  // Default text size
 		public bool gpPenWidthVisible = false;
 		public string SnapshotFileFullPath = ""; // used to record the last snapshot file name, to select it when the balloon is clicked
 
@@ -293,9 +236,9 @@ namespace niceink
 			if (UndoStrokes == null)
 			{
 				UndoStrokes = new Ink[8];
+				UndoTexts = new List<TextObject>[8];
 				UndoStrokes[0] = FormCollection.IC.Ink.Clone();
-				UndoTextAnnotations = new List<TextAnnotation>[8];
-				UndoTextAnnotations[0] = new List<TextAnnotation>(TextAnnotations);
+				UndoTexts[0] = new List<TextObject>();
 				UndoDepth = 0;
 				UndoP = 0;
 			}
@@ -304,8 +247,6 @@ namespace niceink
 		}
 		public void StopInk()
 		{
-			InlineTextActive = false;
-			InlineText = "";
 			FormCollection.Close();
 			FormDisplay.Close();
 			FormButtonHitter.Close();
@@ -324,10 +265,17 @@ namespace niceink
 
 		public void ClearInk()
 		{
+			// Cancel any active text editing
+			if (FormCollection.editingTextObj != null)
+			{
+				FormCollection.CancelTextEditing();
+			}
+			
 			FormCollection.IC.Ink.DeleteStrokes();
-			TextAnnotations.Clear();
+			TextObjects.Clear();
 			FormDisplay.ClearCanvus();
 			FormDisplay.DrawStrokes();
+			FormDisplay.DrawTexts();
 			FormDisplay.DrawButtons(true);
 			FormDisplay.UpdateFormDisplay(true);
 		}
@@ -350,16 +298,28 @@ namespace niceink
 			FormCollection.IC.Ink.DeleteStrokes();
 			if (UndoStrokes[UndoP].Strokes.Count > 0)
 				FormCollection.IC.Ink.AddStrokesAtRectangle(UndoStrokes[UndoP].Strokes, UndoStrokes[UndoP].Strokes.GetBoundingBox());
-
-			if (UndoTextAnnotations[UndoP] != null)
-				TextAnnotations = new List<TextAnnotation>(UndoTextAnnotations[UndoP]);
-			else
-				TextAnnotations.Clear();
+			
+			// Restore texts
+			TextObjects = CloneTextList(UndoTexts[UndoP]);
 
 			FormDisplay.ClearCanvus();
 			FormDisplay.DrawStrokes();
+			FormDisplay.DrawTexts();
 			FormDisplay.DrawButtons(true);
 			FormDisplay.UpdateFormDisplay(true);
+		}
+
+		public List<TextObject> CloneTextList(List<TextObject> source)
+		{
+			List<TextObject> clone = new List<TextObject>();
+			if (source != null)
+			{
+				foreach (TextObject obj in source)
+				{
+					clone.Add(new TextObject(obj.Text, obj.X, obj.Y, obj.Color, obj.HasOutline, obj.FontSize));
+				}
+			}
+			return clone;
 		}
 
 		public void Pan(int x, int y)
@@ -368,9 +328,35 @@ namespace niceink
 				return;
 
 			FormCollection.IC.Ink.Strokes.Move(x, y);
+			
+			// Convert InkSpace units to pixels for text objects
+			// The IC.Renderer uses a specific scaling between InkSpace and Pixels
+			Point pt1 = new Point(0, 0);
+			Point pt2 = new Point(0, 100);
+			FormCollection.IC.Renderer.PixelToInkSpace(FormDisplay.gOneStrokeCanvus, ref pt1);
+			FormCollection.IC.Renderer.PixelToInkSpace(FormDisplay.gOneStrokeCanvus, ref pt2);
+			float unitperpixel = (pt2.Y - pt1.Y) / 100.0f;
+			
+			int pixelX = (int)(x / unitperpixel);
+			int pixelY = (int)(y / unitperpixel);
+			
+			// Move text objects as well
+			foreach (TextObject textObj in TextObjects)
+			{
+				textObj.X += pixelX;
+				textObj.Y += pixelY;
+			}
+			
+			// Also move editing text if active
+			if (FormCollection.editingTextObj != null)
+			{
+				FormCollection.editingTextObj.X += pixelX;
+				FormCollection.editingTextObj.Y += pixelY;
+			}
 
 			FormDisplay.ClearCanvus();
 			FormDisplay.DrawStrokes();
+			FormDisplay.DrawTexts();
 			FormDisplay.DrawButtons(true);
 			FormDisplay.UpdateFormDisplay(true);
 		}
@@ -385,6 +371,7 @@ namespace niceink
 
 			FormDisplay.ClearCanvus();
 			FormDisplay.DrawStrokes();
+			FormDisplay.DrawTexts();
 			FormDisplay.DrawButtons(true);
 			FormDisplay.UpdateFormDisplay(true);
 		}
@@ -402,14 +389,13 @@ namespace niceink
 			FormCollection.IC.Ink.DeleteStrokes();
 			if (UndoStrokes[UndoP].Strokes.Count > 0)
 				FormCollection.IC.Ink.AddStrokesAtRectangle(UndoStrokes[UndoP].Strokes, UndoStrokes[UndoP].Strokes.GetBoundingBox());
-
-			if (UndoTextAnnotations[UndoP] != null)
-				TextAnnotations = new List<TextAnnotation>(UndoTextAnnotations[UndoP]);
-			else
-				TextAnnotations.Clear();
+			
+			// Restore texts
+			TextObjects = CloneTextList(UndoTexts[UndoP]);
 
 			FormDisplay.ClearCanvus();
 			FormDisplay.DrawStrokes();
+			FormDisplay.DrawTexts();
 			FormDisplay.DrawButtons(true);
 			FormDisplay.UpdateFormDisplay(true);
 		}
@@ -732,12 +718,6 @@ namespace niceink
 						case "INKVISIBLE_ICON":
 							if (sPara.ToUpper() == "FALSE" || sPara == "0" || sPara.ToUpper() == "OFF")
 								InkVisibleEnabled = false;
-							break;
-						case "TEXT_ICON":
-							if (sPara.ToUpper() == "FALSE" || sPara == "0" || sPara.ToUpper() == "OFF")
-								TextEnabled = false;
-							else if (sPara.ToUpper() == "TRUE" || sPara == "1" || sPara.ToUpper() == "ON")
-								TextEnabled = true;
 							break;
 						case "ALLOW_DRAGGING_TOOLBAR":
 							if (sPara.ToUpper() == "FALSE" || sPara == "0" || sPara.ToUpper() == "OFF")

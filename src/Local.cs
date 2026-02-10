@@ -25,7 +25,6 @@ namespace niceink
 		public string ButtonNameClear = "Clear";
 		public string ButtonNameExit = "Exit drawing";
 		public string ButtonNameDock = "Dock";
-		public string ButtonNameText = "Text";
 
 		public string MenuEntryExit = "Exit";
 		public string MenuEntryOptions = "Options";

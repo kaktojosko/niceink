@@ -31,11 +31,12 @@
 			this.components = new System.ComponentModel.Container();
 			this.gpButtons = new System.Windows.Forms.Panel();
 			this.btInkVisible = new System.Windows.Forms.Button();
+			this.btText = new System.Windows.Forms.Button();
 			this.btPan = new System.Windows.Forms.Button();
 			this.btDock = new System.Windows.Forms.Button();
 			this.btPenWidth = new System.Windows.Forms.Button();
+			this.btTextSize = new System.Windows.Forms.Button();
 			this.btEraser = new System.Windows.Forms.Button();
-			this.btText = new System.Windows.Forms.Button();
 			this.btSnap = new System.Windows.Forms.Button();
 			this.btPointer = new System.Windows.Forms.Button();
 			this.btStop = new System.Windows.Forms.Button();
@@ -54,11 +55,12 @@
 			// 
 			this.gpButtons.BackColor = System.Drawing.Color.WhiteSmoke;
 			this.gpButtons.Controls.Add(this.btInkVisible);
+			this.gpButtons.Controls.Add(this.btText);
 			this.gpButtons.Controls.Add(this.btPan);
 			this.gpButtons.Controls.Add(this.btDock);
 			this.gpButtons.Controls.Add(this.btPenWidth);
+			this.gpButtons.Controls.Add(this.btTextSize);
 			this.gpButtons.Controls.Add(this.btEraser);
-			this.gpButtons.Controls.Add(this.btText);
 			this.gpButtons.Controls.Add(this.btSnap);
 			this.gpButtons.Controls.Add(this.btPointer);
 			this.gpButtons.Controls.Add(this.btStop);
@@ -90,6 +92,25 @@
 			this.btInkVisible.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
 			this.btInkVisible.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
 			this.btInkVisible.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
+			// 
+			// btText
+			// 
+			this.btText.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.btText.FlatAppearance.BorderSize = 0;
+			this.btText.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
+			this.btText.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
+			this.btText.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btText.Image = global::niceink.Properties.Resources.text;
+			this.btText.Location = new System.Drawing.Point(1128, 4);
+			this.btText.Name = "btText";
+			this.btText.Size = new System.Drawing.Size(69, 69);
+			this.btText.TabIndex = 4;
+			this.toolTip.SetToolTip(this.btText, "Text Tool (T)");
+			this.btText.UseVisualStyleBackColor = true;
+			this.btText.Click += new System.EventHandler(this.btText_Click);
+			this.btText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
+			this.btText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
+			this.btText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
 			// 
 			// btPan
 			// 
@@ -150,6 +171,25 @@
 			this.btPenWidth.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
 			this.btPenWidth.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
 			// 
+			// btTextSize
+			// 
+			this.btTextSize.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+			this.btTextSize.FlatAppearance.BorderSize = 0;
+			this.btTextSize.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
+			this.btTextSize.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
+			this.btTextSize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btTextSize.Image = global::niceink.Properties.Resources.textsize;
+			this.btTextSize.Location = new System.Drawing.Point(470, 4);
+			this.btTextSize.Name = "btTextSize";
+			this.btTextSize.Size = new System.Drawing.Size(69, 69);
+			this.btTextSize.TabIndex = 0;
+			this.toolTip.SetToolTip(this.btTextSize, "Text size");
+			this.btTextSize.UseVisualStyleBackColor = true;
+			this.btTextSize.Click += new System.EventHandler(this.btTextSize_Click);
+			this.btTextSize.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
+			this.btTextSize.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
+			this.btTextSize.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
+			// 
 			// btEraser
 			// 
 			this.btEraser.FlatAppearance.BorderSize = 0;
@@ -168,25 +208,6 @@
 			this.btEraser.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
 			this.btEraser.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
 			this.btEraser.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
-			// 
-			// btText
-			// 
-			this.btText.FlatAppearance.BorderSize = 0;
-			this.btText.FlatAppearance.MouseDownBackColor = System.Drawing.Color.WhiteSmoke;
-			this.btText.FlatAppearance.MouseOverBackColor = System.Drawing.Color.WhiteSmoke;
-			this.btText.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btText.ForeColor = System.Drawing.Color.Transparent;
-			this.btText.Image = global::niceink.Properties.Resources.text;
-			this.btText.Location = new System.Drawing.Point(559, 4);
-			this.btText.Name = "btText";
-			this.btText.Size = new System.Drawing.Size(69, 69);
-			this.btText.TabIndex = 0;
-			this.toolTip.SetToolTip(this.btText, "Text");
-			this.btText.UseVisualStyleBackColor = false;
-			this.btText.Click += new System.EventHandler(this.btText_Click);
-			this.btText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseDown);
-			this.btText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
-			this.btText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
 			// 
 			// btSnap
 			// 
@@ -336,6 +357,7 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCollection_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormCollection_FormClosed);
 			this.Load += new System.EventHandler(this.Form1_Load);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormCollection_MouseDown);
 			this.gpButtons.ResumeLayout(false);
 			this.gpPenWidth.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pboxPenWidthIndicator)).EndInit();
@@ -355,12 +377,13 @@
 		public System.Windows.Forms.Button btSnap;
 		public System.Windows.Forms.Button btPointer;
 		public System.Windows.Forms.Button btPenWidth;
+		public System.Windows.Forms.Button btTextSize;
 		public System.Windows.Forms.ToolTip toolTip;
 		public System.Windows.Forms.Panel gpPenWidth;
 		private System.Windows.Forms.PictureBox pboxPenWidthIndicator;
 		public System.Windows.Forms.Button btPan;
-		public System.Windows.Forms.Button btInkVisible;
 		public System.Windows.Forms.Button btText;
+		public System.Windows.Forms.Button btInkVisible;
 	}
 }
 

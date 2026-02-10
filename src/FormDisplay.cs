@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using Microsoft.Ink;
@@ -229,97 +230,149 @@ namespace niceink
 		{
 			if (Root.InkVisible)
 				Root.FormCollection.IC.Renderer.Draw(gCanvus, Root.FormCollection.IC.Ink.Strokes);
-			DrawTextAnnotations(gCanvus);
-			DrawInlineText(gCanvus);
 		}
 		public void DrawStrokes(Graphics g)
 		{
 			if (Root.InkVisible)
 				Root.FormCollection.IC.Renderer.Draw(g, Root.FormCollection.IC.Ink.Strokes);
-			DrawTextAnnotations(g);
-			DrawInlineText(g);
 		}
 
-		public void DrawTextAnnotations(Graphics g)
+		public void DrawTexts()
 		{
+			foreach (TextObject textObj in Root.TextObjects)
+			{
+				DrawTextObject(gCanvus, textObj);
+			}
+		}
+
+		public void DrawEditingText(TextObject textObj, int cursorPos, bool showCursor)
+		{
+			if (textObj == null)
+				return;
+			
+			// Don't draw if ink is not visible
 			if (!Root.InkVisible)
 				return;
 
-			System.Drawing.Drawing2D.CompositingMode oldMode = g.CompositingMode;
-			g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
-			foreach (TextAnnotation annotation in Root.TextAnnotations)
+			// Draw the text (only if not empty)
+			if (!string.IsNullOrEmpty(textObj.Text))
 			{
-				using (Font font = new Font("Arial", annotation.FontSize, FontStyle.Bold))
-				using (SolidBrush brush = new SolidBrush(annotation.Color))
-				{
-					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-					g.DrawString(annotation.Text, font, brush, annotation.X, annotation.Y);
-				}
+				DrawTextObject(gCanvus, textObj, true);
 			}
-			g.CompositingMode = oldMode;
-		}
-
-		public void DrawPreviewText(string text, int x, int y, Color color, int fontSize)
-		{
-			if (string.IsNullOrEmpty(text))
-				return;
-
-			System.Drawing.Drawing2D.CompositingMode oldMode = gCanvus.CompositingMode;
-			gCanvus.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
-			using (Font font = new Font("Arial", fontSize, FontStyle.Bold))
-			using (SolidBrush brush = new SolidBrush(Color.FromArgb(180, color)))
+			
+			// Draw cursor
+			if (showCursor)
 			{
-				gCanvus.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-				gCanvus.DrawString(text, font, brush, x, y);
-			}
-			gCanvus.CompositingMode = oldMode;
-		}
-
-		public void DrawInlineText(Graphics g)
-		{
-			if (!Root.InlineTextActive)
-				return;
-
-			System.Drawing.Drawing2D.CompositingMode oldMode = g.CompositingMode;
-			g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
-			using (Font font = new Font("Arial", Root.InlineTextFontSize, FontStyle.Bold))
-			{
-				string displayText = Root.InlineText;
-				// Draw the text
-				if (displayText.Length > 0)
+				// Use the text object's font size, or current global size if not set
+				int fontSize = textObj.FontSize > 0 ? textObj.FontSize : Root.GlobalTextSize;
+				using (Font font = new Font("Microsoft Sans Serif", fontSize, FontStyle.Bold))
 				{
-					using (SolidBrush brush = new SolidBrush(Root.InlineTextColor))
+					string textBeforeCursor = (textObj.Text != null && cursorPos > 0) ? textObj.Text.Substring(0, Math.Min(cursorPos, textObj.Text.Length)) : "";
+					int cursorX = textObj.X;
+					int cursorY = textObj.Y;
+					
+					if (textObj.HasOutline)
 					{
-						g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-						g.DrawString(displayText, font, brush, Root.InlineTextX, Root.InlineTextY);
+						// For outlined text, use GraphicsPath (same as drawing method)
+						if (!string.IsNullOrEmpty(textBeforeCursor))
+						{
+							using (GraphicsPath path = new GraphicsPath())
+							{
+								path.AddString(textBeforeCursor, font.FontFamily, (int)font.Style, font.Size,
+									new Point(textObj.X, textObj.Y), StringFormat.GenericDefault);
+								RectangleF bounds = path.GetBounds();
+								cursorX = (int)bounds.Right;
+							}
+						}
+						// Add small gap after the text
+						cursorX += 2;
+						// Adjust Y for outline thickness
+						cursorY += 2;
+					}
+					else
+					{
+						// For non-outlined text, use MeasureString (same as drawing method)
+						if (!string.IsNullOrEmpty(textBeforeCursor))
+						{
+							// Use the same StringFormat as DrawString uses by default
+							using (StringFormat sf = new StringFormat(StringFormat.GenericDefault))
+							{
+								SizeF size = gCanvus.MeasureString(textBeforeCursor, font, int.MaxValue, sf);
+								cursorX = textObj.X + (int)size.Width;
+							}
+						}
+					}
+					
+					int cursorHeight = (int)(fontSize * 1.2);  // Scale cursor with text size
+					
+					using (Pen cursorPen = new Pen(textObj.Color, 2))
+					{
+						gCanvus.DrawLine(cursorPen, cursorX, cursorY, cursorX, cursorY + cursorHeight);
 					}
 				}
-
-				// Draw cursor
-				float cursorX = Root.InlineTextX;
-				if (displayText.Length > 0)
-				{
-					CharacterRange[] ranges = new CharacterRange[] { new CharacterRange(0, displayText.Length) };
-					StringFormat sf = new StringFormat();
-					sf.SetMeasurableCharacterRanges(ranges);
-					RectangleF layoutRect = new RectangleF(Root.InlineTextX, Root.InlineTextY, 10000, 10000);
-					Region[] regions = g.MeasureCharacterRanges(displayText, font, layoutRect, sf);
-					if (regions.Length > 0)
-					{
-						RectangleF bounds = regions[0].GetBounds(g);
-						cursorX = bounds.Right;
-						regions[0].Dispose();
-					}
-					sf.Dispose();
-				}
-
-				float cursorHeight = font.GetHeight(g);
-				using (Pen cursorPen = new Pen(Root.InlineTextColor, 2))
-				{
-					g.DrawLine(cursorPen, cursorX, Root.InlineTextY, cursorX, Root.InlineTextY + cursorHeight);
-				}
 			}
-			g.CompositingMode = oldMode;
+		}
+
+		public void DrawTextObject(Graphics g, TextObject textObj, bool ignoreInkVisible = false)
+		{
+			if ((!Root.InkVisible && !ignoreInkVisible) || textObj == null)
+				return;
+			
+			// Don't draw empty or null text
+			if (string.IsNullOrEmpty(textObj.Text) || textObj.Text.Trim().Length == 0)
+				return;
+
+			try
+			{
+				// Save current compositing mode and switch to SourceOver for text rendering
+				CompositingMode savedMode = g.CompositingMode;
+				g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
+				
+				// Use the text object's font size, or default if not set
+				int fontSize = textObj.FontSize > 0 ? textObj.FontSize : Root.GlobalTextSize;
+				using (Font font = new Font("Microsoft Sans Serif", fontSize, FontStyle.Bold))
+				{
+					// Ensure solid color (no transparency)
+					Color solidColor = Color.FromArgb(255, textObj.Color.R, textObj.Color.G, textObj.Color.B);
+					
+					if (textObj.HasOutline)
+					{
+						// Draw black outline
+						using (GraphicsPath path = new GraphicsPath())
+						{
+							path.AddString(textObj.Text, font.FontFamily, (int)font.Style, font.Size,
+								new Point(textObj.X, textObj.Y), StringFormat.GenericDefault);
+							
+							using (Pen outlinePen = new Pen(Color.Black, 4))
+							{
+								g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+								g.DrawPath(outlinePen, path);
+							}
+							
+							using (SolidBrush brush = new SolidBrush(solidColor))
+							{
+								g.FillPath(brush, path);
+							}
+						}
+					}
+					else
+					{
+						// Draw text without outline
+						using (SolidBrush brush = new SolidBrush(solidColor))
+						{
+							g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+							g.DrawString(textObj.Text, font, brush, textObj.X, textObj.Y);
+						}
+					}
+				}
+				
+				// Restore compositing mode
+				g.CompositingMode = savedMode;
+			}
+			catch
+			{
+				// Ignore drawing errors
+			}
 		}
 
 		public void MoveStrokes(int dy)
@@ -333,6 +386,18 @@ namespace niceink
 			foreach (Stroke stroke in Root.FormCollection.IC.Ink.Strokes)
 				if (!stroke.Deleted)
 					stroke.Move(0, shouldmove);
+			
+			// Move text objects as well
+			foreach (TextObject textObj in Root.TextObjects)
+			{
+				textObj.Y += dy;
+			}
+			
+			// Also move editing text if active
+			if (Root.FormCollection.editingTextObj != null)
+			{
+				Root.FormCollection.editingTextObj.Y += dy;
+			}
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
@@ -553,6 +618,7 @@ namespace niceink
 			{
 				ClearCanvus();
 				DrawStrokes();
+				DrawTexts();
 				DrawButtons(true);
 				if (Root.Snapping > 0)
 					DrawSnapping(Root.SnappingRect);
@@ -566,6 +632,7 @@ namespace niceink
 					System.Threading.Thread.Sleep(200);
 				ClearCanvus();
 				DrawStrokes();
+				DrawTexts();
 				//DrawButtons(false);
 				UpdateFormDisplay(true);
 				SnapShot(Root.SnappingRect);
@@ -587,6 +654,7 @@ namespace niceink
 				{
 					ClearCanvus();
 					DrawStrokes();
+					DrawTexts();
 					DrawButtons(false);
 					DrawSnapping(Root.SnappingRect);
 					UpdateFormDisplay(true);
@@ -629,6 +697,7 @@ namespace niceink
 			{
 				ClearCanvus();
 				DrawStrokes();
+				DrawTexts();
 				DrawButtons(false);
 				UpdateFormDisplay(true);
 			}
@@ -662,6 +731,7 @@ namespace niceink
 					MoveStrokes(stackmove);
 					ClearCanvus();
 					DrawStrokes();
+					DrawTexts();
 					DrawButtons(false);
 					UpdateFormDisplay(true);
 					stackmove = 0;
